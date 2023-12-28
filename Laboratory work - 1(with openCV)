@@ -1,0 +1,36 @@
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+using namespace cv;
+
+int main() {
+    Mat image;
+    Size imageSize;
+
+    image = imread("image.jpg", IMREAD_COLOR);
+    if (image.empty()) {
+        std::cout << "Ошибка при загрузке изображения." << std::endl;
+        return -1;
+    }
+
+    Mat rotatedClockwise;
+    Point2f centerClockwise(static_cast<float>(image.cols / 2), static_cast<float>(image.rows / 2));
+    Mat rotationMatrixClockwise = getRotationMatrix2D(centerClockwise, -90, 1);
+    warpAffine(image, rotatedClockwise, rotationMatrixClockwise, image.size());
+
+    imwrite("rotated_clockwise.jpg", rotatedClockwise);
+
+    Mat rotatedCounterClockwise;
+    Point2f centerCounterClockwise(static_cast<float>(image.cols / 2), static_cast<float>(image.rows / 2));
+    Mat rotationMatrixCounterClockwise = getRotationMatrix2D(centerCounterClockwise, 90, 1);
+    warpAffine(image, rotatedCounterClockwise, rotationMatrixCounterClockwise, image.size());
+
+    imwrite("rotated_counterclockwise.jpg", rotatedCounterClockwise);
+
+    Mat filteredImage;
+    GaussianBlur(rotatedClockwise, filteredImage, Size(0, 0), 1);
+
+    imwrite("filtered_image.jpg", filteredImage);
+
+    return 0;
+}
